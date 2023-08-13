@@ -1,16 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
-<link rel="stylesheet" href="style.css">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>文件下载列表</title>
 </head>
 <body>
-  <ul>
-    <li><a href="数境.zip">数境.zip</a></li>
-    <li><a href="红石.zip">红石.zip</a></li>
-  </ul>
+  <h1>文件下载列表</h1>
+  <div id="download-list">
+    <!-- 动态生成的下载链接将显示在这里 -->
+  </div>
+
+  <script>
+    // 获取当前页面所在目录的文件列表并动态生成下载链接
+    fetch('./')
+      .then(response => response.text())
+      .then(data => {
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(data, 'text/html');
+        const links = htmlDoc.querySelectorAll('a');
+
+        const downloadList = document.getElementById('download-list');
+        links.forEach(link => {
+          const filename = link.href.split('/').pop(); // 获取文件名
+          const downloadButton = document.createElement('button');
+          downloadButton.textContent = filename;
+          downloadButton.onclick = () => {
+            window.location.href = filename; // 点击按钮时下载文件
+          };
+          downloadList.appendChild(downloadButton);
+        });
+      });
+  </script>
 </body>
 </html>
