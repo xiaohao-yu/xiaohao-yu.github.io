@@ -1,0 +1,82 @@
+/* 页面整体背景 */
+body {
+  background-color: #222;
+  color: #fff;
+}
+
+/* 标题 */
+h1, h2, h3 {
+  color: #fff;
+}
+
+/* 段落文本 */
+p {
+  color: #ccc;
+}
+
+/* 链接 */
+a {
+  color: #aaa;
+  text-decoration: none;
+}
+
+/* 鼠标悬停时的链接效果 */
+a:hover {
+  color: #fff;
+}
+
+/* 列表 */
+ul, ol {
+  color: #ccc;
+}
+
+/* 列表项 */
+li {
+  color: #ccc;
+}
+
+/* 表格 */
+table {
+  color: #ccc;
+}
+
+/* 表格标题 */
+th {
+  color: #fff;
+}
+
+/* 表格单元格 */
+td {
+  color: #ccc;
+}
+
+/* 文本输入框 */
+input[type="text"] {
+  background-color: #444;
+  color: #ccc;
+  border: none;
+}
+
+/* 按钮 */
+button {
+  background-color: #666;
+  color: #fff;
+  border: none;
+}
+
+/* 文本区域 */
+textarea {
+  background-color: #444;
+  color: #ccc;
+  border: none;
+}
+
+/* 表单标签 */
+label {
+  color: #ccc;
+}
+
+/* 图像 */
+img {
+  filter: brightness(70%);
+}
