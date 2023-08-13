@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>文件下载列表</title>
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>文件下载列表</h1>
@@ -22,11 +21,10 @@
         const downloadList = document.getElementById('download-list');
         links.forEach(link => {
           const filename = link.href.split('/').pop(); // 获取文件名
-          const downloadButton = document.createElement('button');
+          const downloadButton = document.createElement('a');
           downloadButton.textContent = filename;
-          downloadButton.onclick = () => {
-            window.location.href = filename; // 点击按钮时下载文件
-          };
+          downloadButton.href = link.href; // 设置下载链接地址
+          downloadButton.download = filename; // 设置下载文件名
           downloadList.appendChild(downloadButton);
         });
       });
