@@ -5,29 +5,9 @@
 </head>
 <body>
   <h1>文件下载列表</h1>
-  <div id="download-list">
-    <!-- 动态生成的下载链接将显示在这里 -->
-  </div>
-
-  <script>
-    // 获取当前页面所在目录的文件列表并动态生成下载链接
-    fetch('./')
-      .then(response => response.text())
-      .then(data => {
-        const parser = new DOMParser();
-        const htmlDoc = parser.parseFromString(data, 'text/html');
-        const links = htmlDoc.querySelectorAll('a');
-
-        const downloadList = document.getElementById('download-list');
-        links.forEach(link => {
-          const filename = link.href.split('/').pop(); // 获取文件名
-          const downloadButton = document.createElement('a');
-          downloadButton.textContent = filename;
-          downloadButton.href = link.href; // 设置下载链接地址
-          downloadButton.download = filename; // 设置下载文件名
-          downloadList.appendChild(downloadButton);
-        });
-      });
-  </script>
+  <a href='/数境.zip'>
+  <a href='/红石.zip'>
+  <a href='/1800ml.zip'>
+  <a href='/'>
 </body>
 </html>
