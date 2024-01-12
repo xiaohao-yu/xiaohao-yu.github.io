@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>自动跳转网页</title>
+  <script>
+    window.onload = function() {
+      var input = document.getElementById('inputBox');
+      input.onkeyup = function() {
+        if (input.value === '1145') {
+          window.location.href = 'https"//xiaohao-yu.github.io/index2.html'; // 在这里替换为你想要跳转的网站链接
+        }
+      };
+    };
+  </script>
+</head>
+<body>
+  <h1>输入密码后自动跳转到网站</h1>
+  <input type="text" id="inputBox">
+</body>
+</html>
