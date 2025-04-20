@@ -1,34 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>动态浏览其他网站</title>
-    <style>
-        /* 可选：添加样式美化页面 */
-        iframe {
-            width: 100%;
-            height: 600px;
-            border: 1px solid #ccc;
-        }
-        .button-container {
-            margin: 20px 0;
-        }
-    </style>
-</head>
-<body>
-    <!-- 按钮容器，用于切换页面 -->
-    <div class="button-container">
-        <button onclick="loadPage('httpp://47.113.229.62/')">页面 1</button>
-        <button onclick="loadPage('https://example.com/page2')">页面 2</button>
-    </div>
-
-    <!-- 使用 iframe 显示内容 -->
-    <iframe id="contentFrame" src="initial-page.html" width="100%" height="600"></iframe>
-
-    <script>
-        // JavaScript 函数：通过按钮点击动态修改 iframe 的 src
-        function loadPage(url) {
-            document.getElementById("contentFrame").src = url;
-        }
-    </script>
-</body>
-</html>
+<script>
+    windows.location.href="HTTP://47.113.229.62"
+</script>
