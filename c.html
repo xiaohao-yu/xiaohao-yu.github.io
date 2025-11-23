@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>抄作文编辑器</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Noto Sans SC', "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #f9f7fe 0%, #f0f4ff 100%);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      padding: 24px;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #4a5568;
+      font-weight: 600;
+    }
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #4a6cf7;
+      color: white;
+      box-shadow: 0 2px 6px rgba(74, 108, 247, 0.3);
+    }
+    .btn:hover:not(:disabled) {
+      background: #3a5ae0;
+      transform: translateY(-1px);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: #e9ecef;
+      color: #495057;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: #dee2e6;
+    }
+    .status {
+      font-size: 14px;
+      color: #6c757d;
+      margin-left: auto;
+    }
+    .status.success {
+      color: #28a745;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-family: 'Noto Sans SC', monospace;
+      font-size: 16px;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #4a6cf7;
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+    }
+    .prompt-area {
+      background-color: #f8f9fa;
+      color: #6c757d;
+      min-height: 70px;
+    }
+    .input-area {
+      min-height: 100px;
+      background-color: #fff;
+    }
+    .preview-area {
+      min-height: 220px;
+      background-color: #fafdff;
+      border: 1px dashed #d0d7f0;
+    }
+    .progress {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #4a6cf7;
+      margin: 12px 0;
+    }
+    .celebration {
+      animation: pulse 1.5s infinite;
+      text-align: center;
+      font-size: 18px;
+      color: #28a745;
+      font-weight: 600;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .hidden {
+      display: none;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 16px;
+      }
+      .btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      .top-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .status {
+        margin-left: 0;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 抄作文编辑器</h1>
+
+    <div class="top-bar">
+      <button class="btn" id="loadBtn">📂 加载原文</button>
+      <button class="btn btn-secondary" id="forceNextBtn" disabled>✅ 本句已抄完（强制下一句）</button>
+      <span class="status" id="statusLabel">未加载原文</span>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📖 原文提示（请抄写）</div>
+      <textarea id="prompt" class="prompt-area" readonly></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-title">✍️ 你的抄写（请在此打字）</div>
+      <textarea id="userInput" class="input-area" placeholder="请逐字抄写上方提示内容……"></textarea>
+    </div>
+
+    <div class="progress" id="progressLabel">进度：0/0</div>
+
+    <div class="section">
+      <div class="section-title">📄 已保存的抄写内容预览</div>
+      <textarea id="preview" class="preview-area" readonly></textarea>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept=".txt" class="hidden" />
+
+  <script>
+    let originalSentences = [];
+    let currentIndex = 0;
+    let savedText = [];
+
+    const fileInput = document.getElementById('fileInput');
+    const loadBtn = document.getElementById('loadBtn');
+    const forceNextBtn = document.getElementById('forceNextBtn');
+    const statusLabel = document.getElementById('statusLabel');
+    const promptArea = document.getElementById('prompt');
+    const userInput = document.getElementById('userInput');
+    const previewArea = document.getElementById('preview');
+    const progressLabel = document.getElementById('progressLabel');
+
+    loadBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const content = await file.text();
+        const sentences = content.split(/(?<=[。！？.!?])\s*/);
+        originalSentences = sentences.map(s => s.trim()).filter(s => s);
+
+        if (originalSentences.length === 0) {
+          alert('原文为空或无法分割句子！');
+          return;
+        }
+
+        currentIndex = 0;
+        savedText = [];
+        updatePrompt();
+        userInput.value = '';
+        previewArea.value = '';
+        statusLabel.textContent = `已加载 ${originalSentences.length} 句`;
+        statusLabel.className = 'status success';
+        progressLabel.textContent = `进度：${currentIndex}/${originalSentences.length}`;
+        forceNextBtn.disabled = false;
+      } catch (err) {
+        alert('读取文件失败：' + err.message);
+      }
+      fileInput.value = ''; // 重置 input，允许重复选择同名文件
+    });
+
+    userInput.addEventListener('input', () => {
+      if (currentIndex >= originalSentences.length) return;
+      const userText = userInput.value.trim();
+      const currentSentence = originalSentences[currentIndex];
+      if (userText === currentSentence) {
+        saveCurrentAndNext(userText);
+      }
+    });
+
+    forceNextBtn.addEventListener('click', () => {
+      const userText = userInput.value.trim();
+      saveCurrentAndNext(userText);
+    });
+
+    function updatePrompt() {
+      if (currentIndex < originalSentences.length) {
+        promptArea.value = originalSentences[currentIndex];
+      } else {
+        promptArea.value = '';
+        promptArea.classList.add('celebration');
+        promptArea.placeholder = '🎉 抄写完成！文件已保存。';
+      }
+    }
+
+    function saveCurrentAndNext(textToSave) {
+      savedText.push(textToSave);
+      currentIndex++;
+
+      previewArea.value += textToSave + '\n';
+      previewArea.scrollTop = previewArea.scrollHeight;
+
+      userInput.value = '';
+      updatePrompt();
+      progressLabel.textContent = `进度：${currentIndex}/${originalSentences.length}`;
+
+      if (currentIndex === originalSentences.length) {
+        const blob = new Blob([savedText.join('\n')], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '抄写结果.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        forceNextBtn.disabled = true;
+      }
+    }
+  </script>
+</body>
+</html>
